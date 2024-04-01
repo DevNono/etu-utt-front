@@ -173,7 +173,7 @@ export default function Navbar() {
         {/* ACCOUNT */}
         {loggedIn && (
           <a href="#" className={styles.profile}>
-            <img src="https://picsum.photos/200" alt="Profile picture" />
+            <img src="https://picsum.photos/seed/45/200/200" alt="Profile picture" />
             <div className={styles.infos}>
               <p className={styles.name}>
                 {user?.firstName} {user?.lastName}
