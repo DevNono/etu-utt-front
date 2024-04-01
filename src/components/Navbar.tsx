@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { type NotParameteredTranslationKey } from '@/lib/i18n';
 import { useAppTranslation } from '@/lib/i18n';
 import Icons from '@/icons';
+import { isLoggedIn, logout } from '@/module/session';
+import Button from './UI/Button';
 
 /**
  * The type defining all possible properties for a menu item
@@ -22,6 +24,7 @@ type MenuItemProperties<Translate extends boolean> = {
       : NotParameteredTranslationKey | string;
   path: `/${string}`;
   submenus: MenuItem<false>[];
+  needLogin: boolean;
   translate: Translate;
 };
 
@@ -64,6 +67,8 @@ export default function Navbar() {
   //   - Menu4
   const [selectedMenuName, setSelectedMenuName] = useState<string>('');
   const menuItems = useAppSelector(getMenu);
+  const loggedIn = true ;
+  const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   const { t, i18n } = useAppTranslation();
@@ -83,6 +88,11 @@ export default function Navbar() {
     dispatch(setCollapsed(!menuItems.collapsed));
   };
 
+  /** Logs out the user */
+  const logoutUser = () => {
+    dispatch(logout());
+  }
+
   /**
    * Creates a button as an {@link HTMLDivElement} using data from the provided {@link MenuItem}.
    *
@@ -91,29 +101,33 @@ export default function Navbar() {
    */
   const inflateButton = (item: MenuItem, after: string = '') => {
     return 'path' in item ? (
-      <Link href={item.path as string} className={`${styles.button} ${styles.link}`} key={item.name}>
-        <div className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}>
-          {'icon' in item ? (item as MenuItem<true>).icon() : ''}
-          <div className={styles.name}>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</div>
-        </div>
-      </Link>
+      ((item.needLogin && loggedIn) || !item.needLogin) && (
+        <li>
+          <Link href={item.path as string} className={`${styles.navigationLink}`} key={item.name}>
+            {'icon' in item ? (item as MenuItem<true>).icon() : ''}
+            <span>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</span>
+          </Link>
+        </li>
+      )
     ) : (
-      <div
-        className={`${styles.button} ${styles.category} ${
-          selectedMenuName.startsWith([after, item.name].join(',')) ? styles.containerOpen : styles.containerClose
-        }`}
-        style={{ maxHeight: `calc(${1 + item.submenus.length} * (2rem + 20px))` }}
-        key={item.name}>
+      ((item.needLogin && loggedIn) || !item.needLogin) && (
         <div
-          className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}
-          onClick={() => toggleSelected([after, item.name].join(','))}>
-          {'icon' in item ? (item as MenuItem<true>).icon() : ''}
-          <div className={styles.name}>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</div>
+          className={`${styles.button} ${styles.category} ${
+            selectedMenuName.startsWith([after, item.name].join(',')) ? styles.containerOpen : styles.containerClose
+          }`}
+          style={{ maxHeight: `calc(${1 + item.submenus.length} * (2rem + 20px))` }}
+          key={item.name}>
+          <div
+            className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}
+            onClick={() => toggleSelected([after, item.name].join(','))}>
+            {'icon' in item ? (item as MenuItem<true>).icon() : ''}
+            <div className={styles.name}>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</div>
+          </div>
+          <div className={styles.buttonChildrenContainer}>
+            {item.submenus.map((item) => inflateButton(item, [after, item.name].join(',')))}
+          </div>
         </div>
-        <div className={styles.buttonChildrenContainer}>
-          {item.submenus.map((item) => inflateButton(item, [after, item.name].join(',')))}
-        </div>
-      </div>
+      )
     );
   };
 
@@ -121,11 +135,11 @@ export default function Navbar() {
   return (
     <div className={`${styles.navigation} ${menuItems.collapsed ? styles.navigation__collapsed : ''}`}>
       {/* LOGO ETUUTT */}
-      <a className={`${styles.navigationLogo}`} >
+      <a className={`${styles.navigationLogo}`}>
         <div>
           <div className={`${styles.navigationIcons}`} onClick={() => menuItems.collapsed && toggleCollapsed()}>
             <Icons.Menu />
-            <Icons.Home />
+            <Icons.LogoEtu />
           </div>
           <span>EtuUTT</span>
         </div>
@@ -136,49 +150,57 @@ export default function Navbar() {
       {/* NAVIGATION */}
       <nav role="navigation">
         <ul>
-          <li>
-            <a className={`${styles.navigationLink}`} href="#">
-              <Icons.Home />
-              <span>Accueil</span>
-            </a>
-          </li>
-          <li>
-            <a className={`${styles.navigationLink}`} href="#">
-              <Icons.Book />
-              <span>Trombinoscope</span>
-            </a>
-          </li>
-          <li>
-            <a className={`${styles.navigationLink}`} href="#">
-              <Icons.Book />
-              <span>Guide des UEs</span>
-            </a>
-          </li>
-          <li>
-            <a className={`${styles.navigationLink}`} href="#">
-              <Icons.Book />
-              <span>Associations</span>
-            </a>
-          </li>
+          {menuItems.items.slice(0, menuItems.seperator).map((item) => inflateButton(item))}
+          {/* <li className={styles.separator}></li> */}
+          {menuItems.items.slice(menuItems.seperator).map((item) => inflateButton(item))}
         </ul>
       </nav>
-      {/* ACCOUNT */}
+
       <div className={styles.bottom}>
-        <a href="#" className={styles.profile}>
-          <img src='https://picsum.photos/200' alt="Profile picture"/>
-          <div className={styles.infos}>
-            <p className={styles.name}>Alban Souchard de Lavoreille hsuisuisdhufhudsh</p>
-            <p className={styles.role}>Étudiant</p>
-          </div>
-          <div className={styles.actions}>
-            <div onClick={() => console.log("HEYYYYY")}>
-              <Icons.User />
+        {/* ACCOUNT */}
+        {loggedIn && (
+          <a href="#" className={styles.profile}>
+            <img src="https://picsum.photos/200" alt="Profile picture" />
+            <div className={styles.infos}>
+              <p className={styles.name}>
+                {user?.firstName} {user?.lastName}
+              </p>
+              <p className={styles.role}>Étudiant</p>
             </div>
-            <div onClick={() => console.log("HEYYYYY")}>
-              <Icons.Star />
+            <div className={styles.actions}>
+              <div className={styles.language} onClick={() => console.log('language')}>
+                <Icons.Language />
+                <select
+                  value={language}
+                  onChange={(e) => {
+                    i18n.changeLanguage(e.target.value);
+                    localStorage.setItem('etu-utt-lang', e.target.value);
+                    setLanguage(e.target.value);
+                  }}>
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div onClick={logoutUser}>
+                <Icons.Logout />
+              </div>
+            </div>
+          </a>
+        )}
+
+        {/* NOT LOGGED IN */}
+        {!loggedIn && (
+          <div className={styles.guest}>
+            <a className={`${styles.navigationLink}`} href="#">
+              <Icons.Login />
+              <span>Connexion</span>
+            </a>
+            <div className={`${styles.buttons}`}>
+              <Button onClick={() => console.log('login')}>Connexion</Button>
+              <Button onClick={() => console.log('register')}>Inscription</Button>
             </div>
           </div>
-        </a>
+        )}
       </div>
     </div>
   );
