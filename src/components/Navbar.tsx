@@ -10,6 +10,7 @@ import { useAppTranslation } from '@/lib/i18n';
 import Icons from '@/icons';
 import { isLoggedIn, logout } from '@/module/session';
 import Button from './UI/Button';
+import { usePageSettings } from '@/module/pageSettings';
 
 /**
  * The type defining all possible properties for a menu item
@@ -70,6 +71,7 @@ export default function Navbar() {
   const loggedIn = useAppSelector(isLoggedIn);
   const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
+  const { navbarAdditionalComponent } = usePageSettings();
 
   const { t, i18n } = useAppTranslation();
   const [language, setLanguage] = useState(i18n.language);
@@ -158,6 +160,12 @@ export default function Navbar() {
         <ul>
           {menuItems.items.slice(0, menuItems.seperator).map((item) => inflateButton(item))}
           {menuItems.items.slice(menuItems.seperator).map((item) => inflateButton(item))}
+          {navbarAdditionalComponent && (
+            <>
+              <div className={styles.separator} />
+              {navbarAdditionalComponent()}
+            </>
+          )}
         </ul>
       </nav>
 
