@@ -109,40 +109,37 @@ export default function Navbar() {
    * value if the item is in the root menu.
    */
   const inflateButton = (item: MenuItem, after: string = '') => {
-    return 'path' in item
-      ? ((item.needLogin && loggedIn) || !item.needLogin) && (
-          <li>
-            <Link href={item.path as string} className={`${styles.navigationLink}`} key={item.name}>
-              {'icon' in item ? (item as MenuItem<true>).icon() : ''}
-              <span>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</span>
-            </Link>
-          </li>
-        )
-      : ((item.needLogin && loggedIn) || !item.needLogin) && (
-          <div
-            className={`${styles.button} ${styles.category} ${
-              selectedMenuName.startsWith([after, item.name].join(',')) ? styles.containerOpen : styles.containerClose
-            }`}
-            style={{ maxHeight: `calc(${1 + item.submenus.length} * (2rem + 20px))` }}
-            key={item.name}>
-            <div
-              className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}
-              onClick={() => toggleSelected([after, item.name].join(','))}>
-              {'icon' in item ? (item as MenuItem<true>).icon() : ''}
-              <div className={styles.name}>
-                {item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}
-              </div>
-            </div>
-            <div className={styles.buttonChildrenContainer}>
-              {item.submenus.map((item) => inflateButton(item, [after, item.name].join(',')))}
-            </div>
-          </div>
-        );
+    if (item.needLogin && !loggedIn) return false;
+    return 'path' in item ? (
+      <li key={item.name}>
+        <Link href={item.path as string} className={styles.navigationLink}>
+          {'icon' in item ? (item as MenuItem<true>).icon() : ''}
+          <span>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</span>
+        </Link>
+      </li>
+    ) : (
+      <div
+        className={`${styles.button} ${styles.category} ${
+          selectedMenuName.startsWith([after, item.name].join(',')) ? styles.containerOpen : styles.containerClose
+        }`}
+        style={{ maxHeight: `calc(${1 + item.submenus.length} * (2rem + 20px))` }}
+        key={item.name}>
+        <div
+          className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}
+          onClick={() => toggleSelected([after, item.name].join(','))}>
+          {'icon' in item ? (item as MenuItem<true>).icon() : ''}
+          <div className={styles.name}>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</div>
+        </div>
+        <div className={styles.buttonChildrenContainer}>
+          {item.submenus.map((item) => inflateButton(item, [after, item.name].join(',')))}
+        </div>
+      </div>
+    );
   };
 
   // Based on : https://codepen.io/guled10/pen/zYqVqed
   return (
-    <div className={`${styles.navigation} ${menuItems.collapsed ? styles.navigation__collapsed : ''}`}>
+    <div className={`${styles.navigation} ${menuItems.collapsed ? styles.collapsed : ''}`}>
       {/* LOGO ETUUTT */}
       <a className={`${styles.navigationLogo}`}>
         <div>
@@ -160,7 +157,6 @@ export default function Navbar() {
       <nav role="navigation">
         <ul>
           {menuItems.items.slice(0, menuItems.seperator).map((item) => inflateButton(item))}
-          {/* <li className={styles.separator}></li> */}
           {menuItems.items.slice(menuItems.seperator).map((item) => inflateButton(item))}
         </ul>
       </nav>

@@ -16,23 +16,12 @@
     margin: 0;
   }
 
-  &__collapsed {
+  &.collapsed {
     width: 80px;
 
     .profile > div {
       opacity: 0;
     }
-  }
-}
-
-.separator {
-  height: 1px;
-  background-color: $navigation-link-color;
-  border-radius: 1rem;
-  margin: 1rem 0.75rem;
-
-  .navigation__collapsed & {
-    opacity: 0;
   }
 }
 
@@ -46,7 +35,7 @@
   position: relative;
   justify-content: flex-start;
 
-  .navigation__collapsed & {
+  .collapsed & {
     opacity: 0;
   }
 
@@ -116,7 +105,7 @@
       transition: all 400ms ease-in-out;
     }
 
-    .navigation__collapsed & {
+    .collapsed & {
       .buttons {
         opacity: 0;
         pointer-events: none;
@@ -268,7 +257,7 @@
       opacity: 1;
     }
 
-    .navigation__collapsed & {
+    .collapsed & {
       svg:first-child {
         opacity: 1;
       }
@@ -290,7 +279,7 @@
     margin-right: 8px;
   }
 
-  .navigation__collapsed & span {
+  .collapsed & span {
     opacity: 0;
   }
 }
@@ -316,7 +305,7 @@
   > span {
     margin-left: 0.5rem;
 
-    .navigation__collapsed & {
+    .collapsed & {
       padding: 0.5rem;
       line-height: 1;
       border-radius: 0.425rem;
@@ -348,7 +337,7 @@
     background-color: $ung-light-grey;
     color: $navigation-text-color;
 
-    .navigation__collapsed & > span {
+    .collapsed & > span {
       position: absolute;
       opacity: 1 !important;
       font-size: 0.875rem;

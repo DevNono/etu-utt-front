@@ -88,14 +88,14 @@ export const userSlice = createSlice({
         name: 'common:navbar.uesBrowser',
         path: '/ues',
         translate: true,
-        needLogin: true,
+        needLogin: false,
       },
       {
         icon: Icons.Users,
         name: 'common:navbar.associations',
         path: '/assos',
         translate: true,
-        needLogin: true,
+        needLogin: false,
       },
       {
         icon: Icons.Caret,
