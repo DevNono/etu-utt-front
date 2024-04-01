@@ -67,7 +67,7 @@ export default function Navbar() {
   //   - Menu4
   const [selectedMenuName, setSelectedMenuName] = useState<string>('');
   const menuItems = useAppSelector(getMenu);
-  const loggedIn = true ;
+  const loggedIn = useAppSelector(isLoggedIn);
   const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
@@ -92,7 +92,7 @@ export default function Navbar() {
   /** Logs out the user */
   const logoutUser = () => {
     dispatch(logout());
-  }
+  };
 
   /** Change the language */
   const changeLanguage = (lang: string) => {
@@ -100,7 +100,7 @@ export default function Navbar() {
     localStorage.setItem('etu-utt-lang', lang);
     setLanguage(lang);
     setLanguageSelectorOpen(false);
-  }
+  };
 
   /**
    * Creates a button as an {@link HTMLDivElement} using data from the provided {@link MenuItem}.
@@ -109,35 +109,35 @@ export default function Navbar() {
    * value if the item is in the root menu.
    */
   const inflateButton = (item: MenuItem, after: string = '') => {
-    return 'path' in item ? (
-      ((item.needLogin && loggedIn) || !item.needLogin) && (
-        <li>
-          <Link href={item.path as string} className={`${styles.navigationLink}`} key={item.name}>
-            {'icon' in item ? (item as MenuItem<true>).icon() : ''}
-            <span>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</span>
-          </Link>
-        </li>
-      )
-    ) : (
-      ((item.needLogin && loggedIn) || !item.needLogin) && (
-        <div
-          className={`${styles.button} ${styles.category} ${
-            selectedMenuName.startsWith([after, item.name].join(',')) ? styles.containerOpen : styles.containerClose
-          }`}
-          style={{ maxHeight: `calc(${1 + item.submenus.length} * (2rem + 20px))` }}
-          key={item.name}>
+    return 'path' in item
+      ? ((item.needLogin && loggedIn) || !item.needLogin) && (
+          <li>
+            <Link href={item.path as string} className={`${styles.navigationLink}`} key={item.name}>
+              {'icon' in item ? (item as MenuItem<true>).icon() : ''}
+              <span>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</span>
+            </Link>
+          </li>
+        )
+      : ((item.needLogin && loggedIn) || !item.needLogin) && (
           <div
-            className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}
-            onClick={() => toggleSelected([after, item.name].join(','))}>
-            {'icon' in item ? (item as MenuItem<true>).icon() : ''}
-            <div className={styles.name}>{item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}</div>
+            className={`${styles.button} ${styles.category} ${
+              selectedMenuName.startsWith([after, item.name].join(',')) ? styles.containerOpen : styles.containerClose
+            }`}
+            style={{ maxHeight: `calc(${1 + item.submenus.length} * (2rem + 20px))` }}
+            key={item.name}>
+            <div
+              className={`${styles.buttonContent} ${styles['indent-' + (after.split(',').length - 1)]}`}
+              onClick={() => toggleSelected([after, item.name].join(','))}>
+              {'icon' in item ? (item as MenuItem<true>).icon() : ''}
+              <div className={styles.name}>
+                {item.translate ? t(item.name as NotParameteredTranslationKey) : item.name}
+              </div>
+            </div>
+            <div className={styles.buttonChildrenContainer}>
+              {item.submenus.map((item) => inflateButton(item, [after, item.name].join(',')))}
+            </div>
           </div>
-          <div className={styles.buttonChildrenContainer}>
-            {item.submenus.map((item) => inflateButton(item, [after, item.name].join(',')))}
-          </div>
-        </div>
-      )
-    );
+        );
   };
 
   // Based on : https://codepen.io/guled10/pen/zYqVqed
@@ -182,11 +182,25 @@ export default function Navbar() {
 
                 <div className={`${styles.languageSelector} ${languageSelectorOpen ? styles.open : ''}`}>
                   <div>
-                    <input type="radio" id="fr" name="language" value="fr" checked={language === 'fr'} onChange={() => changeLanguage('fr')} />
+                    <input
+                      type="radio"
+                      id="fr"
+                      name="language"
+                      value="fr"
+                      checked={language === 'fr'}
+                      onChange={() => changeLanguage('fr')}
+                    />
                     <label htmlFor="fr">Français</label>
                   </div>
                   <div>
-                    <input type="radio" id="en" name="language" value="en" checked={language === 'en'} onChange={() => changeLanguage('en')} />
+                    <input
+                      type="radio"
+                      id="en"
+                      name="language"
+                      value="en"
+                      checked={language === 'en'}
+                      onChange={() => changeLanguage('en')}
+                    />
                     <label htmlFor="en">English</label>
                   </div>
                 </div>

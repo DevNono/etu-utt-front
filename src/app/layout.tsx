@@ -8,7 +8,7 @@ import Navbar from '@/components/Navbar';
 
 export const metadata = {
   title: 'EtuUTT - Bêta',
-  description: 'Site étudiant de l\'UTT',
+  description: "Site étudiant de l'UTT",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
