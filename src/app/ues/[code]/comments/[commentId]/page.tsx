@@ -106,12 +106,10 @@ export default function CommentDetails() {
       <div className={styles.buttonWrapper}>
         <Button
           className={styles.button}
-          onClick={() =>
-            sendCommentReply(api, params.commentId, answer).on('success', (res) => {
+          onClick={() => sendCommentReply(api, params.commentId, answer).on('success', (newAnswer) => {
+              setComment({ ...comment, answers: [...comment?.answers ?? [], newAnswer] });
               setAnswer('');
-              setComment({ ...comment, answers: [...(comment?.answers ?? []), res] });
-            })
-          }>
+            })}>
           {t('ues:detailed.comments.answers.answerButton')}
         </Button>
       </div>

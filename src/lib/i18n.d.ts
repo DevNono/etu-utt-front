@@ -1,11 +1,12 @@
 import common from '../../public/locales/fr/common.json';
 import ues from '../../public/locales/fr/ues.json';
 import login from '../../public/locales/fr/login.json';
+import homepage from '../../public/locales/fr/homepage.json';
 import { type InitOptions } from 'i18next';
 
 declare module 'i18next' {
   interface CustomTypeOptions extends InitOptions {
-    ns: ['common', 'login', 'ues'];
+    ns: ['common', 'login', 'ues', 'homepage'];
     nsSeparator: ':';
     defaultNS: 'common';
     // custom resources type
@@ -13,6 +14,7 @@ declare module 'i18next' {
       common: typeof common;
       ues: typeof ues;
       login: typeof login;
+      homepage: typeof homepage;
     };
   }
 }
