@@ -166,10 +166,66 @@
 
       .language {
         position: relative;
-        select {
+        
+        .languageSelector {
           position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          background-color: $ung-light-grey;
+          border-radius: 0.5rem;
+          margin-bottom: 1rem;
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
           opacity: 0;
-          width: 0;
+          pointer-events: none;
+          transition: all 200ms ease-in-out;
+
+          &.open {
+            opacity: 1;
+            pointer-events: all;
+          }
+
+          // Bottom arrow
+          &::before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid $ung-light-grey;
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+
+          div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+
+            input[type='radio'] {
+              display: none;
+            }
+
+            label {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              cursor: pointer;
+              width: 100%;
+              padding: 0.5rem;
+              transition: all 200ms ease-in-out;
+
+              &:hover {
+                background-color: $ung-light-grey;
+              }
+            }
+          }
         }
       }
 

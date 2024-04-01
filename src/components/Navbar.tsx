@@ -73,6 +73,7 @@ export default function Navbar() {
 
   const { t, i18n } = useAppTranslation();
   const [language, setLanguage] = useState(i18n.language);
+  const [languageSelectorOpen, setLanguageSelectorOpen] = useState(false);
 
   /**
    * Switches the selected menu. If the menu (or one of its children) is already selected, the menu will close.
@@ -91,6 +92,14 @@ export default function Navbar() {
   /** Logs out the user */
   const logoutUser = () => {
     dispatch(logout());
+  }
+
+  /** Change the language */
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem('etu-utt-lang', lang);
+    setLanguage(lang);
+    setLanguageSelectorOpen(false);
   }
 
   /**
@@ -168,18 +177,19 @@ export default function Navbar() {
               <p className={styles.role}>Étudiant</p>
             </div>
             <div className={styles.actions}>
-              <div className={styles.language} onClick={() => console.log('language')}>
+              <div className={styles.language} onClick={() => setLanguageSelectorOpen(!languageSelectorOpen)}>
                 <Icons.Language />
-                <select
-                  value={language}
-                  onChange={(e) => {
-                    i18n.changeLanguage(e.target.value);
-                    localStorage.setItem('etu-utt-lang', e.target.value);
-                    setLanguage(e.target.value);
-                  }}>
-                  <option value="fr">Français</option>
-                  <option value="en">English</option>
-                </select>
+
+                <div className={`${styles.languageSelector} ${languageSelectorOpen ? styles.open : ''}`}>
+                  <div>
+                    <input type="radio" id="fr" name="language" value="fr" checked={language === 'fr'} onChange={() => changeLanguage('fr')} />
+                    <label htmlFor="fr">Français</label>
+                  </div>
+                  <div>
+                    <input type="radio" id="en" name="language" value="en" checked={language === 'en'} onChange={() => changeLanguage('en')} />
+                    <label htmlFor="en">English</label>
+                  </div>
+                </div>
               </div>
               <div onClick={logoutUser}>
                 <Icons.Logout />
