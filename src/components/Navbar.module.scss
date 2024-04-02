@@ -284,8 +284,18 @@
   }
 }
 
+.separator {
+  height: 1px;
+  background-color: $navigation-link-color;
+  border-radius: 1rem;
+  margin: 1rem 0.75rem;
+
+  .navigation__collapsed & {
+    opacity: 0;
+  }
+}
+
 .navigationLink {
-  display: block;
   color: $navigation-link-color;
   display: flex;
   align-items: center;

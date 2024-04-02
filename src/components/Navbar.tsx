@@ -11,6 +11,7 @@ import Icons from '@/icons';
 import { isLoggedIn, logout } from '@/module/session';
 import Button from './UI/Button';
 import { usePageSettings } from '@/module/pageSettings';
+import { useRouter } from 'next/navigation';
 
 /**
  * The type defining all possible properties for a menu item
@@ -66,6 +67,7 @@ export default function Navbar() {
   // - Menu2
   //   > Menu3
   //   - Menu4
+  const router = useRouter();
   const [selectedMenuName, setSelectedMenuName] = useState<string>('');
   const menuItems = useAppSelector(getMenu);
   const loggedIn = useAppSelector(isLoggedIn);
@@ -219,13 +221,13 @@ export default function Navbar() {
         {/* NOT LOGGED IN */}
         {!loggedIn && (
           <div className={styles.guest}>
-            <a className={`${styles.navigationLink}`} href="#">
+            <a className={styles.navigationLink} href="#">
               <Icons.Login />
               <span>Connexion</span>
             </a>
             <div className={`${styles.buttons}`}>
-              <Button onClick={() => console.log('login')}>Connexion</Button>
-              <Button onClick={() => console.log('register')}>Inscription</Button>
+              <Button onClick={() => router.push('/login')}>Connexion</Button>
+              <Button onClick={() => router.push('/register')}>Inscription</Button>
             </div>
           </div>
         )}
